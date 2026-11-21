@@ -24,7 +24,9 @@ export default function GitHub() {
     <section id="github" className="relative py-28 md:py-40">
       <div className="container-x" ref={ref}>
         <SectionHeading index="06" eyebrow="Open source" title="Live from GitHub." accent={['GitHub.']}
-          kicker={`Pulled live from the GitHub API for @${GITHUB_USERNAME}: tools, experiments and side projects outside my day job.`} />
+          kicker={data?.snapshot
+            ? `Tools, experiments and side projects from @${GITHUB_USERNAME}, outside my day job. Live data couldn't load here, so this is a recent snapshot.`
+            : `Pulled live from the GitHub API for @${GITHUB_USERNAME}: tools, experiments and side projects outside my day job.`} />
 
         {error && (
           <div className="rounded-2xl border border-white/[0.08] p-8 text-fog-400">
@@ -39,7 +41,9 @@ export default function GitHub() {
               <motion.a href={`https://github.com/${GITHUB_USERNAME}`} target="_blank" rel="noreferrer" data-cursor="visit"
                 initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={viewport} transition={{ duration: 0.9, ease }}
                 className="group relative flex items-center gap-5 overflow-hidden rounded-3xl border border-white/[0.07] bg-ink-900/50 p-6 transition-colors hover:border-white/15 md:p-8">
-                {data ? (
+                {data && (data.snapshot || !data.user.avatar_url) ? (
+                  <div className="grid h-[72px] w-[72px] shrink-0 place-items-center rounded-2xl border border-white/10 bg-ink-850 font-mono text-lg text-mint">HS</div>
+                ) : data ? (
                   <img src={data.user.avatar_url} alt="" width={72} height={72} loading="lazy" className="h-[72px] w-[72px] rounded-2xl border border-white/10 grayscale transition duration-700 group-hover:grayscale-0" />
                 ) : <div className="h-[72px] w-[72px] animate-pulse rounded-2xl bg-white/5" />}
                 <div className="min-w-0">

@@ -72,7 +72,7 @@ export default function Nav({ ready }: { ready: boolean }) {
               ))}
               <motion.li initial={{ opacity: 0 }} animate={ready ? { opacity: 1 } : {}} transition={{ delay: 0.6 }} className="ml-3">
                 <Magnetic>
-                  <a href="/resume.pdf" target="_blank" rel="noreferrer" className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-mint/40 px-4 py-2 font-mono text-[12px] text-mint transition-colors hover:text-ink-950">
+                  <a href="resume.pdf" target="_blank" rel="noreferrer" className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-mint/40 px-4 py-2 font-mono text-[12px] text-mint transition-colors hover:text-ink-950">
                     <span className="absolute inset-0 translate-y-full rounded-full bg-mint transition-transform duration-500 ease-[cubic-bezier(.22,1,.36,1)] group-hover:translate-y-0" />
                     <span className="relative">Résumé</span>
                   </a>
@@ -107,7 +107,7 @@ export default function Nav({ ready }: { ready: boolean }) {
                 </motion.li>
               ))}
             </ul>
-            <motion.a initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} href="/resume.pdf" target="_blank" rel="noreferrer" className="container-x mt-10 font-mono text-sm text-mint">
+            <motion.a initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }} href="resume.pdf" target="_blank" rel="noreferrer" className="container-x mt-10 font-mono text-sm text-mint">
               Download résumé →
             </motion.a>
           </motion.div>

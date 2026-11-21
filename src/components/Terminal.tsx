@@ -17,7 +17,11 @@ const commands: Record<string, () => string[] | 'clear'> = {
   projects: () => { scrollToId('work'); return ['→ scrolling to selected work…']; },
   systems: () => { scrollToId('systems'); return ['→ opening the request-flow simulator…']; },
   contact: () => [`email    ${profile.email}`, `linkedin ${profile.socials.linkedin.replace('https://www.', '')}`],
-  resume: () => { window.open('/resume.pdf', '_blank'); return ['→ opening résumé.pdf']; },
+  resume: () => {
+    const a = Object.assign(document.createElement('a'), { href: 'resume.pdf', target: '_blank', rel: 'noreferrer' });
+    a.click();
+    return ['→ opening résumé.pdf'];
+  },
   status: () => ['Building systems that scale…'],
   clear: () => 'clear',
   sudo: () => ['Nice try. Permission granted only after an interview. 😉'],

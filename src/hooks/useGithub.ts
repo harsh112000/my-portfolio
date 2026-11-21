@@ -6,7 +6,9 @@ export type Repo = {
   pushed_at: string; topics?: string[]; size: number; archived: boolean;
 };
 export type GhUser = { login: string; name: string | null; avatar_url: string; html_url: string; public_repos: number; followers: number; bio: string | null; created_at: string };
-export type GhData = { user: GhUser; repos: Repo[]; stars: number; forks: number; languages: { name: string; count: number; pct: number }[]; top: Repo[]; years: number };
+export type GhData = { user: GhUser; repos: Repo[]; stars: number; forks: number; languages: { name: string; count: number; pct: number }[]; top: Repo[]; years: number; snapshot?: boolean };
+
+import { githubSnapshot } from '../data/githubSnapshot';
 
 const TTL = 30 * 60 * 1000;
 
@@ -34,6 +36,24 @@ export function useGithub(username: string, enabled: boolean, featured: string[]
       get(`https://api.github.com/users/${username}/repos?per_page=100&sort=pushed`),
     ])
       .then(([user, repos]: [GhUser, Repo[]]) => {
+        const d = summarise(user, repos, featured);
+        setData(d);
+        try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), d })); } catch { /* ignore */ }
+      })
+      .catch((e) => {
+        if (e.name === 'AbortError') return;
+        // Live API unreachable: fall back to the bundled snapshot so the section still shows real repos.
+        if (username === githubSnapshot.user.login) setData({ ...summarise(githubSnapshot.user, githubSnapshot.repos, featured), snapshot: true });
+        else setError(e.message);
+      })
+      .finally(() => setLoading(false));
+    return () => ctl.abort();
+  }, [username, enabled, data, featured]);
+
+  return { data, error, loading };
+}
+
+function summarise(user: GhUser, repos: Repo[], featured: string[]): GhData {
         const own = repos.filter((r) => !r.fork);
         const stars = own.reduce((a, r) => a + r.stargazers_count, 0);
         const forks = own.reduce((a, r) => a + r.forks_count, 0);
@@ -48,14 +68,5 @@ export function useGithub(username: string, enabled: boolean, featured: string[]
           .sort((a, b) => +new Date(b.pushed_at) - +new Date(a.pushed_at));
         const top = [...picked, ...rest].slice(0, 6);
         const years = Math.max(1, Math.floor((Date.now() - +new Date(user.created_at)) / (365.25 * 86400000)));
-        const d: GhData = { user, repos: own, stars, forks, languages, top, years };
-        setData(d);
-        try { sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), d })); } catch { /* ignore */ }
-      })
-      .catch((e) => { if (e.name !== 'AbortError') setError(e.message); })
-      .finally(() => setLoading(false));
-    return () => ctl.abort();
-  }, [username, enabled, data]);
-
-  return { data, error, loading };
+        return { user, repos: own, stars, forks, languages, top, years };
 }
